@@ -3,15 +3,18 @@ import { JsonView, darkStyles } from 'react-json-view-lite'
 import "react-json-view-lite/dist/index.css";
 
 
-function ComparePopup({formattedResponse, setShowModal}) {
+function ComparePopup({formattedResponse, setShowModal, responseStatus}) {
+
   return (
     <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50">    
      <div className="bg-gray-900 w-10/12 max-w-6xl max-h-[90vh] overflow-auto rounded-2xl shadow-2xl p-8">
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-lg font-semibold text-blue-400">Response Verification</h2>
-        <button onClick={() => setShowModal(false)} className="text-gray-400 hover:text-gray-200 text-xl">✖</button>
+        <button onClick={() => setShowModal(false)} className="text-gray-400 hover:text-gray-200 text-xl cursor-pointer">✖</button>
       </div>
 
+      {responseStatus === 200 ?
+      <>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div className="bg-gray-800 rounded-xl p-3 overflow-auto max-h-96">
           <h3 className="text-sm font-bold text-gray-300 mb-2">Actual Response</h3>
@@ -28,10 +31,18 @@ function ComparePopup({formattedResponse, setShowModal}) {
       </div>
 
       <div className="flex justify-end mt-4">
-        <button className="bg-blue-600 hover:bg-blue-500 text-white px-4 py-2 rounded-xl font-semibold">
+        <button className="bg-blue-600 hover:bg-blue-500 text-white px-4 py-2 rounded-xl font-semibold cursor-pointer">
           Verify Response
         </button>
       </div>
+      </>
+      : 
+      <>
+      <h2> Response Failed With Status : {responseStatus}</h2>
+      </>
+      }
+
+         
     </div>
   </div>
   )

@@ -17,6 +17,7 @@ export default function App() {
   const [loading, setLoading] = useState(false);
   const [activeTab, setActiveTab] = useState("Params");
   const [showComparePopup, setShowComparePopup] = useState(false);
+  const [responseStatus, setResponseStatus] = useState();
 
   const sendRequest = async () => {
     if (!url.trim()) {
@@ -36,10 +37,12 @@ export default function App() {
       }
 
       const res = await fetch(url, options);
+      setResponseStatus(res.status);
       const text = await res.text();
       setResponse(text);
 
     } catch (err) {
+      setResponseStatus(-1);
       setResponse(err.message);
     } finally {
       setShowComparePopup(true);
@@ -48,58 +51,92 @@ export default function App() {
   };
 
   return (
-   <div className="min-h-screen w-screen bg-gray-950 text-gray-100 flex flex-col p-4">
-      <div className="flex-1 bg-gray-900 border border-gray-800 rounded-2xl shadow-xl p-6">
-        <h1 className="text-2xl font-bold mb-6 text-center text-blue-400">
-          API Tester 🧩
+   <div className="min-h-screen w-screen bg-neutral-900 text-gray-100 flex flex-col p-4">
+      <div className="flex-1 w-full bg-[rgb(33,33,33)]  mx-auto border border-gray-800 rounded-2xl shadow-xl p-6">
+        <h1 className="text-2xl font-bold mb-6 text-center text-[rgb(255,108,55)]">
+          API Tester
         </h1>
 
         <div className="flex flex-col sm:flex-row gap-3 mb-4">
           <select
-            className="bg-gray-800 border border-gray-700 rounded-xl px-3 py-2 font-semibold focus:outline-none"
+            className={`border-3 border-[rgb(98,98,98)] rounded-xl px-3 py-3 font-semibold focus:border-[rgb(2,101,210)] 
+                        focus:outline-none transition-colors duration-200 bg-[rgb(33,33,33)] text-gray-300`}
+            style={{
+              color:
+                method === "GET"
+                  ? "#4ade80" 
+                  : method === "POST"
+                  ? "#facc15" 
+                  : method === "PUT"
+                  ? "#60a5fa" 
+                  : method === "DELETE"
+                  ? "#f87171" 
+                  : "#a78bfa", 
+            }}
             value={method}
             onChange={(e) => setMethod(e.target.value)}
           >
             {["GET", "POST", "PUT", "DELETE", "PATCH"].map((m) => (
-              <option key={m}>{m}</option>
+              <option
+                key={m}
+                value={m}
+                className="bg-[rgb(33,33,33)] text-gray-300"
+                style={{
+                  color:
+                    m === "GET"
+                      ? "#4ade80"
+                      : m === "POST"
+                      ? "#facc15"
+                      : m === "PUT"
+                      ? "#60a5fa"
+                      : m === "DELETE"
+                      ? "#f87171"
+                      : "#a78bfa",
+                }}
+              >
+                {m}
+              </option>
             ))}
           </select>
 
           <input
             type="text"
-            className="flex-1 bg-gray-800 border border-gray-700 rounded-xl px-3 py-2 focus:outline-none"
-            placeholder="Enter API endpoint (e.g. https://api.example.com)"
+            className="flex-1 border-3 border-[rgb(98,98,98)] rounded-xl px-3 py-3 
+                      focus:border-[rgb(2,101,210)] focus:outline-none transition-colors duration-200
+                      bg-[rgb(33,33,33)] text-gray-200 placeholder-gray-500"
+            placeholder="Enter URL or Paste"
             value={url}
             onChange={(e) => setUrl(e.target.value)}
           />
 
-          
-        <button
-          onClick={sendRequest}
-          disabled={loading}
-          className={`px-3 py-2 rounded-xl text-lg font-semibold transition cursor-pointer ${
-            loading
-              ? "bg-gray-700 cursor-not-allowed"
-              : "bg-blue-600 hover:bg-blue-500"
-          }`}
-        >
-          {loading ? "Sending..." : "Send Request 🚀"}
-        </button>
-        </div>  
+          <button
+            onClick={sendRequest}
+            disabled={loading}
+            className={`px-4 py-2 rounded-md text-lg font-semibold transition cursor-pointer ${
+              loading
+                ? "bg-gray-700 cursor-not-allowed"
+                : "bg-[rgb(2,101,210)] hover:bg-[rgb(59,134,214)]"
+            }`}
+          >
+            {loading ? "Cancel" : "Send"}
+          </button>
+        </div>
+ 
 
-        <div className="flex border-b text-sm font-medium text-gray-600 bg-gray-50 rounded-1.5xl">
-          <button className={`px-4 py-2 ${activeTab === 'Params'? "border-b-2 border-blue-600 text-blue-600": "hover:text-blue-600"}`} onClick={() => setActiveTab("Params")}>
-            Params
-          </button>
-          <button className={`px-4 py-2 ${activeTab === 'Headers'? "border-b-2 border-blue-600 text-blue-600": "hover:text-blue-600"}`} onClick={() => setActiveTab("Headers")}>
-            Headers
-          </button>
-          <button className={`px-4 py-2 ${activeTab === 'Auth'? "border-b-2 border-blue-600 text-blue-600": "hover:text-blue-600"}`} onClick={() => setActiveTab("Auth")}>
-            Auth
-          </button>
-          <button className={`px-4 py-2 ${activeTab === 'Body'? "border-b-2 border-blue-600 text-blue-600": "hover:text-blue-600"}`} onClick={() => setActiveTab("Body")}>
-            Body
-          </button>
+        <div className="flex space-x-2 bg-gray-800/70 rounded-xl p-1 w-fit mx-auto mb-4 backdrop-blur-sm">
+          {["Params", "Headers", "Auth", "Body"].map((tab) => (
+            <button
+              key={tab}
+              onClick={() => setActiveTab(tab)}
+              className={`px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200 ${
+                activeTab === tab
+                  ? "bg-blue-600 text-white shadow-md shadow-blue-500/30"
+                  : "text-gray-300 hover:bg-gray-700/70 hover:text-blue-400 cursor-pointer"
+              }`}
+            >
+              {tab}
+            </button>
+          ))}
         </div>
 
         {activeTab === "Params"? <ParamsComp/>: null}
@@ -112,12 +149,13 @@ export default function App() {
     <ComparePopup
     formattedResponse = {response}
     setShowModal = {()=> setShowComparePopup(false)}
+    responseStatus = {responseStatus}
     /> 
     }
-
+{/* 
     <footer className="text-center py-4 text-gray-400 border-t border-gray-800">
       Made with ❤️ by Jatin Yadav
-    </footer>
+    </footer> */}
     </div>
   );
 }
