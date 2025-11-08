@@ -38,7 +38,33 @@ function ComparePopup({formattedResponse, setShowModal, responseStatus}) {
       </>
       : 
       <>
-      <h2> Response Failed With Status : {responseStatus}</h2>
+      <div className="flex items-center gap-3">
+        <div
+          className={`w-4 h-4 rounded-full ${
+            responseStatus >= 200 && responseStatus < 300
+              ? "bg-green-500"
+              : responseStatus >= 400 && responseStatus < 500
+              ? "bg-red-500"
+              : responseStatus >= 500
+              ? "bg-orange-500"
+              : "bg-gray-400"
+          }`}
+        ></div>
+
+        <span className="text-gray-200 text-lg font-semibold">
+          {responseStatus}{" "}
+          {responseStatus === 404
+            ? "Not Found"
+            : responseStatus === 400
+            ? "Bad Request"
+            : responseStatus === 401
+            ? "Unauthorized"
+            : responseStatus === 500
+            ? "Internal Server Error"
+            : ""}
+        </span>
+      </div>
+
       </>
       }
 

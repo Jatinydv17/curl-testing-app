@@ -6,22 +6,31 @@ function ParamsComp() {
     { enabled: true, key: "", value: "", description: "" },
   ]);
 
-  const handleRowAddClick = () => {
-    setRows([...rows, { enabled: true, key: "", value: "", description: "" }]);
-  };
-
   const handleDelete = (index) => {
     setRows(rows.filter((_, i) => i !== index));
   };
 
   const handleChange = (index, field, value) => {
-    setRows((prev) =>
-      prev.map((row, i) => (i === index ? { ...row, [field]: value } : row))
-    );
+    setRows((prev) => {
+      const updated = prev.map((row, i) =>
+        i === index ? { ...row, [field]: value } : row
+      );
+
+      const last = updated[updated.length - 1];
+      if (
+        index === updated.length - 1 &&
+        (last.key !== "" || last.value !== "" || last.description !== "")
+      ) {
+        updated.push({ enabled: true, key: "", value: "", description: "" });
+      }
+      return updated;
+    });
   };
+
 
   return (
     <div className="p-4 max-h-[400px] overflow-y-auto">
+    <div className="text-[rgb(166,164,166)] font-bold mb-2"> Query Params </div>
       <div className="border border-[#5a5a5a] rounded-md overflow-hidden">
         <table className="w-full text-sm border-[#5a5a5a]  border-collapse">
           <thead className="text-[rgb(166,164,166)] font-semibold">
@@ -40,6 +49,7 @@ function ParamsComp() {
               >
                 <td className="text-center border border-[#5a5a5a]">
                   <input
+                    className="w-6 h-6 accent-white rounded-full"
                     type="checkbox"
                     checked={row.enabled}
                     onChange={(e) => handleChange(i, "enabled", e.target.checked)}

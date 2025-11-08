@@ -103,7 +103,7 @@ export default function App() {
             type="text"
             className="flex-1 border-3 border-[rgb(98,98,98)] rounded-xl px-3 py-3 
                       focus:border-[rgb(2,101,210)] focus:outline-none transition-colors duration-200
-                      bg-[rgb(33,33,33)] text-gray-200 placeholder-gray-500"
+                      bg-[rgb(33,33,33)] text-gray-200 font-medium placeholder-gray-500"
             placeholder="Enter URL or Paste"
             value={url}
             onChange={(e) => setUrl(e.target.value)}
