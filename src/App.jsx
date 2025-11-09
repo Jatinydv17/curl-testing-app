@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import ParamsComp from "./ParamsComp";
 import AuthComp from "./AuthComp";
 import BodyComp from "./BodyComp";
@@ -16,9 +16,9 @@ export default function App() {
   const [activeTab, setActiveTab] = useState("Params");
   const [showComparePopup, setShowComparePopup] = useState(false);
   const [responseStatus, setResponseStatus] = useState();
-  const [params, setParams] = useState([{ key: "", value: "", description: "", enabled:true }]);
+  const [params, setParams] = useState([{ key: "", value: "" }]);
   const [auth, setAuth] = useState([]);
-  const [headers, setHeaders] = useState([]);
+  const [headers, setHeaders] = useState([{ key: "", value: "" }]);
   const [body, setBody] = useState("");
 
   const sendRequest = async () => {
@@ -78,9 +78,8 @@ export default function App() {
   };
 
 
-  const handleParamsChange = (paramsKeyValueDesc) => {
-    const queryString = paramsKeyValueDesc
-      .filter((p) => p.key.trim() !== "" || p.value.trim() !== "")
+  useEffect(() => {
+    const queryString = params.filter((p) => p.key.trim() !== "" || p.value.trim() !== "")
       .map((p) => {
         const keyPart = p.key.trim() !== "" ? encodeURIComponent(p.key.trim()) : "";
         const valuePart = p.value.trim() !== "" ? `=${encodeURIComponent(p.value.trim())}` : "";
@@ -91,9 +90,13 @@ export default function App() {
     const baseUrl = url.split("?")[0];
     const urlWithParams = queryString ? `${baseUrl}?${queryString}` : baseUrl;
 
-    setUrl(urlWithParams);
-    setParams(paramsKeyValueDesc);
-  };
+    setUrl(urlWithParams);  
+  }, [params])
+    
+
+  const handleAddRowParams = () => {
+    setParams([...params, { key: "", value: "" }]);
+  }
 
   const handleDeleteParams = (index) => {
       setParams(params.filter((_, i) => i !== index));
@@ -104,14 +107,6 @@ export default function App() {
       const updated = prev.map((row, i) =>
         i === index ? { ...row, [field]: value } : row
       );
-
-      const last = updated[updated.length - 1];
-      if (
-        index === updated.length - 1 &&
-        (last.key !== "" || last.value !== "" || last.description !== "")
-      ) {
-        updated.push({ enabled: true, key: "", value: "", description: "" });
-      }
       return updated;
     });
   };
@@ -209,10 +204,10 @@ export default function App() {
         </div>
 
 
-        {activeTab === "Params"? <ParamsComp onChange = {handleParamsChange} rows = {params}  handleDelete={handleDeleteParams} handleChange={handleChangeParams}/>: null}
+        {activeTab === "Params"? <ParamsComp rows = {params}  handleDelete={handleDeleteParams} handleChange={handleChangeParams} handleAddRow = {handleAddRowParams}/>: null}
         {activeTab === "Auth"? <AuthComp/>: null}
         {activeTab === "Body"? <BodyComp/>: null}
-        {activeTab === "Headers"? <HeadersComp/>: null}
+        {activeTab === "Headers"? <HeadersComp rows = {headers}  handleDelete={handleDeleteParams} handleChange={handleChangeParams} handleAddRow = {handleAddRowParams}/>: null}
       </div>
 
     {showComparePopup && 
