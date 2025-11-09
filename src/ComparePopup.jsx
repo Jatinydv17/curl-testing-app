@@ -1,10 +1,12 @@
-import React from 'react'
+import { ClipboardCopy } from 'lucide-react';
+import React, { useState } from 'react'
 import { JsonView, darkStyles } from 'react-json-view-lite'
 import "react-json-view-lite/dist/index.css";
+import CopyButton from './CopyButton';
+import ViewCompleteButton from './ViewCompleteButton';
 
 
 function ComparePopup({formattedResponse, setShowModal, responseStatus}) {
-
   return (
     <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50">    
      <div className="bg-gray-900 w-10/12 max-w-6xl max-h-[90vh] overflow-auto rounded-2xl shadow-2xl p-8">
@@ -17,7 +19,14 @@ function ComparePopup({formattedResponse, setShowModal, responseStatus}) {
       <>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div className="bg-gray-800 rounded-xl p-3 overflow-auto max-h-96">
-          <h3 className="text-sm font-bold text-gray-300 mb-2">Actual Response</h3>
+          <div className='flex items-center justify-between mb-2'>
+          <h3 className="text-sm font-bold text-gray-300">Actual Response</h3>
+          <div className='flex items-center gap-2'>
+          <ViewCompleteButton formattedResponse = {formattedResponse}/>
+          <CopyButton textToCopy={formattedResponse} />
+          </div>
+          </div>
+          
           <JsonView data={JSON.parse(formattedResponse)} style={darkStyles} shouldExpandNode={() => true}/>  
         </div>
 

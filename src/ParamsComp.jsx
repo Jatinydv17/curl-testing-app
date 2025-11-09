@@ -1,38 +1,18 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Trash2 } from "lucide-react";
 
-function ParamsComp() {
-  const [rows, setRows] = useState([
-    { enabled: true, key: "", value: "", description: "" },
-  ]);
+function ParamsComp({onChange, rows, handleDelete, handleChange}) {
 
-  const handleDelete = (index) => {
-    setRows(rows.filter((_, i) => i !== index));
-  };
-
-  const handleChange = (index, field, value) => {
-    setRows((prev) => {
-      const updated = prev.map((row, i) =>
-        i === index ? { ...row, [field]: value } : row
-      );
-
-      const last = updated[updated.length - 1];
-      if (
-        index === updated.length - 1 &&
-        (last.key !== "" || last.value !== "" || last.description !== "")
-      ) {
-        updated.push({ enabled: true, key: "", value: "", description: "" });
-      }
-      return updated;
-    });
-  };
+  useEffect(() => {
+    onChange(rows);
+  }, [rows])
 
 
   return (
     <div className="p-4 max-h-[400px] overflow-y-auto">
     <div className="text-[rgb(166,164,166)] font-bold mb-2"> Query Params </div>
       <div className="border border-[#5a5a5a] rounded-md overflow-hidden">
-        <table className="w-full text-sm border-[#5a5a5a]  border-collapse">
+        <table className="w-full text-sm font-semibold border-[#5a5a5a]  border-collapse">
           <thead className="text-[rgb(166,164,166)] font-semibold">
             <tr>
               <th className="borderborder-[#5a5a5a] p-3 text-center w-[5%]"></th>
@@ -82,7 +62,7 @@ function ParamsComp() {
                   />
                   {rows.length > 1 && (
                     <button
-                      className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-red-600 transition"
+                      className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-red-600 transition cursor-pointer"
                       onClick={() => handleDelete(i)}
                     >
                       <Trash2 size={16} />
